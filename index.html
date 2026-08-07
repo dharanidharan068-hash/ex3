@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Validation System</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .form-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .form-container h2 {
+      margin-bottom: 20px;
+      color: #333333;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #4a5568;
+      font-size: 0.9rem;
+    }
+
+    input {
+      padding: 10px 12px;
+      border: 1px solid #cbd5e0;
+      border-radius: 5px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      border-color: #3182ce;
+      box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+    }
+
+    /* Error and Success States */
+    .form-group.invalid input {
+      border-color: #e53e3e;
+    }
+
+    .form-group.invalid input:focus {
+      box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.15);
+    }
+
+    .form-group.valid input {
+      border-color: #38a169;
+    }
+
+    .error-message {
+      color: #e53e3e;
+      font-size: 0.8rem;
+      margin-top: 4px;
+      min-height: 1.2em; /* Prevents layout shift when error appears */
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #3182ce;
+      color: #ffffff;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      margin-top: 10px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #2b6cb0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Create Account</h2>
+    <form id="signupForm" novalidate>
+      
+      <!-- Full Name -->
+      <div class="form-group">
+        <label for="username">Full Name</label>
+        <input type="text" id="username" name="username" placeholder="John Doe">
+        <small class="error-message" id="usernameError"></small>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="john@example.com">
+        <small class="error-message" id="emailError"></small>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="At least 8 characters">
+        <small class="error-message" id="passwordError"></small>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter password">
+        <small class="error-message" id="confirmPasswordError"></small>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('signupForm');
+
+      const username = document.getElementById('username');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const confirmPassword = document.getElementById('confirmPassword');
+
+      // Helper: Show Error Message
+      const showError = (input, message) => {
+        const formGroup = input.parentElement;
+        const errorDisplay = formGroup.querySelector('.error-message');
+        
+        formGroup.classList.add('invalid');
+        formGroup.classList.remove('valid');
+        errorDisplay.textContent = message;
+      };
+
+      // Helper: Show Success State
+      const showSuccess = (input) => {
+        const formGroup = input.parentElement;
+        const errorDisplay = formGroup.querySelector('.error-message');
+
+        formGroup.classList.remove('invalid');
+        formGroup.classList.add('valid');
+        errorDisplay.textContent = '';
+      };
+
+      // Helper: Email Regex Validator
+      const isValidEmail = (emailVal) => {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(emailVal).toLowerCase());
+      };
+
+      // --- Field Validations ---
+
+      const checkUsername = () => {
+        const val = username.value.trim();
+        if (val === '') {
+          showError(username, 'Full name is required.');
+          return false;
+        } else if (val.length < 3) {
+          showError(username, 'Name must be at least 3 characters.');
+          return false;
+        }
+        showSuccess(username);
+        return true;
+      };
+
+      const checkEmail = () => {
+        const val = email.value.trim();
+        if (val === '') {
+          showError(email, 'Email address is required.');
+          return false;
+        } else if (!isValidEmail(val)) {
+          showError(email, 'Please enter a valid email address.');
+          return false;
+        }
+        showSuccess(email);
+        return true;
+      };
+
+      const checkPassword = () => {
+        const val = password.value.trim();
+        if (val === '') {
+          showError(password, 'Password is required.');
+          return false;
+        } else if (val.length < 8) {
+          showError(password, 'Password must be at least 8 characters long.');
+          return false;
+        }
+        showSuccess(password);
+        return true;
+      };
+
+      const checkConfirmPassword = () => {
+        const val = confirmPassword.value.trim();
+        const passVal = password.value.trim();
+
+        if (val === '') {
+          showError(confirmPassword, 'Please confirm your password.');
+          return false;
+        } else if (val !== passVal) {
+          showError(confirmPassword, 'Passwords do not match.');
+          return false;
+        }
+        showSuccess(confirmPassword);
+        return true;
+      };
+
+      // Real-time input listener attachment
+      const fields = [
+        { el: username, fn: checkUsername },
+        { el: email, fn: checkEmail },
+        { el: password, fn: checkPassword },
+        { el: confirmPassword, fn: checkConfirmPassword }
+      ];
+
+      fields.forEach(({ el, fn }) => {
+        el.addEventListener('input', fn);
+        el.addEventListener('blur', fn);
+      });
+
+      // Submit Form Event
+      form.addEventListener('submit', (e) => {
+        e.preventDefault(); // Stop default HTML submission
+
+        // Run all field checks
+        const isUsernameValid = checkUsername();
+        const isEmailValid = checkEmail();
+        const isPasswordValid = checkPassword();
+        const isConfirmPasswordValid = checkConfirmPassword();
+
+        const isFormValid = 
+          isUsernameValid && 
+          isEmailValid && 
+          isPasswordValid && 
+          isConfirmPasswordValid;
+
+        if (isFormValid) {
+          const payload = {
+            username: username.value.trim(),
+            email: email.value.trim(),
+            password: password.value.trim()
+          };
+
+          console.log('Form Submitted Successfully:', payload);
+          alert('Account created successfully!');
+          
+          form.reset();
+          fields.forEach(({ el }) => el.parentElement.classList.remove('valid'));
+        }
+      });
+    });
+  </script>
+</body>
+</html>
