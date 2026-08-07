@@ -12,8 +12,11 @@
       font-family: Arial, sans-serif;
     }
 
+    /* Animated multi-color background */
     body {
-      background-color: #f4f6f8;
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -21,18 +24,32 @@
       padding: 20px;
     }
 
+    /* Keyframes for background animation */
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
     .form-container {
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.95);
       padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(8px);
       width: 100%;
       max-width: 400px;
     }
 
     .form-container h2 {
       margin-bottom: 20px;
-      color: #333333;
+      color: #2d3748;
       text-align: center;
     }
 
@@ -52,24 +69,24 @@
     input {
       padding: 10px 12px;
       border: 1px solid #cbd5e0;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 1rem;
       outline: none;
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     input:focus {
-      border-color: #3182ce;
-      box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+      border-color: #23a6d5;
+      box-shadow: 0 0 0 3px rgba(35, 166, 213, 0.25);
     }
 
-    /* Error and Success States */
+    /* Validation Error and Success States */
     .form-group.invalid input {
       border-color: #e53e3e;
     }
 
     .form-group.invalid input:focus {
-      box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.15);
+      box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
     }
 
     .form-group.valid input {
@@ -80,25 +97,30 @@
       color: #e53e3e;
       font-size: 0.8rem;
       margin-top: 4px;
-      min-height: 1.2em; /* Prevents layout shift when error appears */
+      min-height: 1.2em;
     }
 
     button[type="submit"] {
       width: 100%;
       padding: 12px;
-      background-color: #3182ce;
+      background: linear-gradient(135deg, #23a6d5, #23d5ab);
       color: #ffffff;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
       margin-top: 10px;
     }
 
     button[type="submit"]:hover {
-      background-color: #2b6cb0;
+      box-shadow: 0 4px 12px rgba(35, 213, 171, 0.4);
+      transform: translateY(-1px);
+    }
+
+    button[type="submit"]:active {
+      transform: translateY(0);
     }
   </style>
 </head>
@@ -246,9 +268,8 @@
 
       // Submit Form Event
       form.addEventListener('submit', (e) => {
-        e.preventDefault(); // Stop default HTML submission
+        e.preventDefault();
 
-        // Run all field checks
         const isUsernameValid = checkUsername();
         const isEmailValid = checkEmail();
         const isPasswordValid = checkPassword();
